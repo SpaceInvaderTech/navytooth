@@ -1,0 +1,40 @@
+{
+  "name": "navytooth",
+  "version": "1.0.0",
+  "description": "Firmware builder for OpenHaystack",
+  "keywords": [
+    "OpenHaystack",
+    "firmware"
+  ],
+  "license": "MIT",
+  "main": "output/main.js",
+  "types": "output/main.d.ts",
+  "files": [
+    "output"
+  ],
+  "scripts": {
+    "prebuild": "bun run type:build",
+    "build": "bun build ./src/main.ts --outdir=./output --target=node --minify",
+    "predeploy": "bun run type:check && bun run lint && bun run test && bun run build",
+    "deploy": "npm version patch && npm publish",
+    "lint": "eslint src --ext .ts",
+    "type:check": "tsc",
+    "type:build": "tsc --noEmit false --emitDeclarationOnly",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "archiver": "6.0.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "20.1.2",
+    "@types/archiver": "6.0.2",
+    "@types/node": "20.10.0",
+    "@typescript-eslint/eslint-plugin": "6.12.0",
+    "@typescript-eslint/parser": "6.12.0",
+    "eslint": "8.54.0",
+    "eslint-config-prettier": "9.0.0",
+    "eslint-plugin-prettier": "5.0.1",
+    "prettier": "3.1.0",
+    "typescript": "5.2.2"
+  }
+}
