@@ -4,11 +4,7 @@ import createZipBuffer from './zip';
 import { manifest } from './constants';
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
-function patchFirmware(
-  firmware: Buffer,
-  pattern: string,
-  publicKey: Buffer,
-): Buffer {
+function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
   // Convert the pattern string to a Buffer for searching
   const patternBuffer = Buffer.from(pattern, 'binary');
   // Find the position of the pattern in the firmware
