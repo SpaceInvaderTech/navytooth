@@ -8,13 +8,13 @@ import createZipBuffer from './zip';
 function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
   // Convert the pattern string to a Buffer for searching
   const patternBuffer = Buffer.from(pattern, 'binary');
+  if (patternBuffer.byteLength !== publicKey.byteLength) {
+    throw new Error('Public key is not the same length as the pattern');
+  }
   // Find the position of the pattern in the firmware
   const patternIndex = firmware.indexOf(patternBuffer);
   if (patternIndex === -1) {
     throw new Error('Pattern not found in firmware');
-  }
-  if (publicKey.byteLength !== patternBuffer.byteLength) {
-    throw new Error('Public key is not the same length as the pattern');
   }
   // Create a copy of the firmware to avoid mutating the original buffer
   const patchedFirmware = Buffer.from(firmware);
