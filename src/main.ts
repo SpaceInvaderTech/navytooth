@@ -65,8 +65,8 @@ function generateDFUPackage(patchedFirmware: Buffer, privateKey: Buffer) {
   initPacket = Buffer.concat([initPacket, fixedData]);
   const signature = signData(initPacket, privateKey);
   // Split the signature into R and S components (assuming each is 32 bytes)
-  const rComponent = signature.subarray(0, 32);
-  const sComponent = signature.subarray(32, 64);
+  const rComponent = Buffer.from(signature.subarray(0, 32));
+  const sComponent = Buffer.from(signature.subarray(32, 64));
   // Reverse and append R and S to initPacket
   initPacket = Buffer.concat([
     initPacket,
