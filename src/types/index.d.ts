@@ -5,8 +5,7 @@ export type Accessory = {
   lastDerivationTimestamp: Date;
   symmetricKey: Buffer;
   updateInterval: number;
-  publicKey: KeyObject;
-  privateKey: KeyObject;
+  privateKey: Buffer;
   icon: string;
   isDeployed: boolean;
   colorSpaceName: string;

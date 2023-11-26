@@ -1,10 +1,4 @@
-import {
-  createPrivateKey,
-  createPublicKey,
-  createHash,
-  createSign,
-  type KeyObject,
-} from 'node:crypto';
+import { createECDH, createHash, createSign } from 'node:crypto';
 import type { Accessory } from './types';
 import createZipBuffer from './zip';
 
@@ -19,7 +13,7 @@ const manifestBuffer = Buffer.from(
   }),
 );
 
-// https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L171
+// https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
 function patchFirmware(
   firmware: Buffer,
   pattern: string,
@@ -33,7 +27,7 @@ function patchFirmware(
     throw new Error('Pattern not found in firmware');
   }
   // Ensure the public key is not larger than the pattern
-  if (publicKey.length !== patternBuffer.length) {
+  if (publicKey.byteLength !== patternBuffer.byteLength) {
     throw new Error('Public key is not the same length as the pattern');
   }
   // Create a copy of the firmware to avoid mutating the original buffer
@@ -43,23 +37,16 @@ function patchFirmware(
   return patchedFirmware;
 }
 
-// https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift#L154
-function getAdvertisementKey(
-  privateKey: Accessory['privateKey'],
-  patternLength: number,
-) {
-  const privateKeyBuffer = createPrivateKey({
-    key: privateKey,
-    format: 'pem', // or 'der' if the key is in DER format
-    type: 'pkcs8', // This might need to be adjusted based on the key format
-  });
-  const publicKeyBuffer = createPublicKey(privateKeyBuffer);
-  const publicKeyBytes = publicKeyBuffer.export({
-    type: 'spki',
-    format: 'der', // or 'pem' if needed
-  });
-  // todo: use subarray
-  return publicKeyBytes.slice(1, patternLength + 1);
+// https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift#L154-L164
+function getAdvertisementKey(privateKey: Buffer, patternLength: number) {
+  const curve = createECDH('secp224r1');
+  curve.setPrivateKey(privateKey);
+  const publicKey = curve.getPublicKey(null, 'compressed');
+  const publicKeyTrimmed = publicKey.subarray(1);
+  if (publicKeyTrimmed.byteLength !== patternLength) {
+    throw new Error('Public key is not the same length as the pattern');
+  }
+  return publicKeyTrimmed;
 }
 
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L202
@@ -72,7 +59,8 @@ async function patchFirmwareForAccessory(
   return patchFirmware(firmware, pattern, publicKey);
 }
 
-function signData(data: Buffer, privateKey: KeyObject) {
+// https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L35-L40
+function signData(data: Buffer, privateKey: Buffer) {
   const sign = createSign('SHA256');
   sign.update(data);
   sign.end();
@@ -84,7 +72,7 @@ async function generateDFUPackage(
   accessory: Accessory,
   firmware: Buffer,
   pattern: string,
-  privateKey: KeyObject,
+  privateKey: Buffer,
 ) {
   const patchedFirmware = await patchFirmwareForAccessory(
     accessory,
@@ -111,9 +99,8 @@ async function generateDFUPackage(
   initPacket = Buffer.concat([initPacket, fixedData]);
   const signature = signData(initPacket, privateKey);
   // Split the signature into R and S components (assuming each is 32 bytes)
-  // todo: use subarray
-  const rComponent = signature.slice(0, 32);
-  const sComponent = signature.slice(32, 64);
+  const rComponent = signature.subarray(0, 32);
+  const sComponent = signature.subarray(32, 64);
   // Reverse and append R and S to initPacket
   initPacket = Buffer.concat([
     initPacket,
@@ -130,7 +117,7 @@ export default async function makeFirmware(
   accessory: Accessory,
   firmware: Buffer,
   pattern: string,
-  privateKey: KeyObject,
+  privateKey: Buffer,
 ) {
   const { finalInitPacket, patchedFirmware } = await generateDFUPackage(
     accessory,
