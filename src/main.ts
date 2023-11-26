@@ -1,7 +1,8 @@
 import { createECDH, createHash, createSign } from 'node:crypto';
+import { Buffer } from 'node:buffer';
 import type { Accessory } from './types';
-import createZipBuffer from './zip';
 import { manifest } from './constants';
+import createZipBuffer from './zip';
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
 function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
