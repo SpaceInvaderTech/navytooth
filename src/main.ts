@@ -33,8 +33,8 @@ function patchFirmware(
     throw new Error('Pattern not found in firmware');
   }
   // Ensure the public key is not larger than the pattern
-  if (publicKey.length > patternBuffer.length) {
-    throw new Error('Public key is larger than the pattern space');
+  if (publicKey.length !== patternBuffer.length) {
+    throw new Error('Public key is not the same length as the pattern');
   }
   // Create a copy of the firmware to avoid mutating the original buffer
   const patchedFirmware = Buffer.from(firmware);
