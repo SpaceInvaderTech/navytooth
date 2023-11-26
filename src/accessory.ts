@@ -1,24 +1,15 @@
 import type { Accessory } from './types';
-import { generateKeyPairSync } from 'node:crypto';
+import { createECDH } from 'node:crypto';
 
-// https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift
+// https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift
 
-function makeKeyPair() {
-  return generateKeyPairSync('ec', {
-    namedCurve: 'prime256v1', // Ensure the curve matches what's used in Swift
-    publicKeyEncoding: {
-      type: 'spki',
-      format: 'der',
-    },
-    privateKeyEncoding: {
-      type: 'pkcs8',
-      format: 'pem',
-    },
-  });
+function makePrivateKey() {
+  const curve = createECDH('secp224r1');
+  curve.generateKeys();
+  return curve.getPrivateKey();
 }
 
 export default function makeAccessory(): Accessory {
-  const { publicKey, privateKey } = makeKeyPair();
   return {
     id: 1,
     colorComponents: [0, 0, 0],
@@ -26,8 +17,7 @@ export default function makeAccessory(): Accessory {
     lastDerivationTimestamp: new Date(),
     symmetricKey: Buffer.alloc(0),
     updateInterval: 0,
-    publicKey,
-    privateKey,
+    privateKey: makePrivateKey(),
     icon: '',
     isDeployed: false,
     colorSpaceName: '',
