@@ -88,10 +88,10 @@ export default async function makeFirmware(
 ) {
   const publicKey = getAdvertisementKey(accessory.privateKey, pattern.length);
   const patchedFirmware = patchFirmware(firmware, pattern, publicKey);
-  const initPacket = generateDFUPackage(patchedFirmware, privateKey);
+  const iPack = generateDFUPackage(patchedFirmware, privateKey);
   return createZipBuffer([
     { data: manifest, name: 'manifest.json' },
-    { data: initPacket, name: 'initpacket.dat' },
+    { data: iPack, name: 'initpacket.dat' },
     { data: patchedFirmware, name: 'firmware.bin' },
   ]);
 }
