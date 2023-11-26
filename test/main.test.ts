@@ -9,7 +9,7 @@ import makeAccessory from '../src/accessory';
 import makeFirmware from '../src/main';
 
 const firmwarePath =
-  '../spaceinvader/openhaystack/OpenHaystack/OpenHaystack/HaystackApp/Firmwares/Moko/nrf52810_xxaa.bin';
+  '../openhaystack/OpenHaystack/OpenHaystack/HaystackApp/Firmwares/Moko/nrf52810_xxaa.bin';
 const pattern = 'OFFLINEFINDINGPUBLICKEYHERE!';
 const privateKeyPath = '../private.key';
 // const privateKeyPath = '/Users/jacob/Downloads/test.pem';
