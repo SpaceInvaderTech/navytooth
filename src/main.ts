@@ -9,18 +9,14 @@ import type { Accessory } from './types';
 import createZipBuffer from './zip';
 
 const manifestBuffer = Buffer.from(
-  JSON.stringify(
-    {
-      manifest: {
-        application: {
-          bin_file: 'firmware.bin',
-          dat_file: 'initpacket.dat',
-        },
+  JSON.stringify({
+    manifest: {
+      application: {
+        bin_file: 'firmware.bin',
+        dat_file: 'initpacket.dat',
       },
     },
-    null,
-    2,
-  ),
+  }),
 );
 
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L171
