@@ -1,17 +1,7 @@
 import { createECDH, createHash, createSign } from 'node:crypto';
 import type { Accessory } from './types';
 import createZipBuffer from './zip';
-
-const manifestBuffer = Buffer.from(
-  JSON.stringify({
-    manifest: {
-      application: {
-        bin_file: 'firmware.bin',
-        dat_file: 'initpacket.dat',
-      },
-    },
-  }),
-);
+import { manifest } from './constants';
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
 function patchFirmware(
@@ -26,7 +16,6 @@ function patchFirmware(
   if (patternIndex === -1) {
     throw new Error('Pattern not found in firmware');
   }
-  // Ensure the public key is not larger than the pattern
   if (publicKey.byteLength !== patternBuffer.byteLength) {
     throw new Error('Public key is not the same length as the pattern');
   }
@@ -49,16 +38,6 @@ function getAdvertisementKey(privateKey: Buffer, patternLength: number) {
   return publicKeyTrimmed;
 }
 
-// https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L202
-async function patchFirmwareForAccessory(
-  accessory: Accessory,
-  firmware: Buffer,
-  pattern: string,
-) {
-  const publicKey = getAdvertisementKey(accessory.privateKey, pattern.length);
-  return patchFirmware(firmware, pattern, publicKey);
-}
-
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L35-L40
 function signData(data: Buffer, privateKey: Buffer) {
   const sign = createSign('SHA256');
@@ -68,17 +47,7 @@ function signData(data: Buffer, privateKey: Buffer) {
 }
 
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L63
-async function generateDFUPackage(
-  accessory: Accessory,
-  firmware: Buffer,
-  pattern: string,
-  privateKey: Buffer,
-) {
-  const patchedFirmware = await patchFirmwareForAccessory(
-    accessory,
-    firmware,
-    pattern,
-  );
+function generateDFUPackage(patchedFirmware: Buffer, privateKey: Buffer) {
   // Generate the initPacket header
   const initPacketHeader = Buffer.from([
     0x12, 0x8a, 0x01, 0x0a, 0x44, 0x08, 0x01, 0x12, 0x40,
@@ -108,9 +77,7 @@ async function generateDFUPackage(
     sComponent.reverse(),
   ]);
   // Prepend the initPacket header
-  const finalInitPacket = Buffer.concat([initPacketHeader, initPacket]);
-  // done
-  return { finalInitPacket, patchedFirmware };
+  return Buffer.concat([initPacketHeader, initPacket]);
 }
 
 export default async function makeFirmware(
@@ -119,15 +86,12 @@ export default async function makeFirmware(
   pattern: string,
   privateKey: Buffer,
 ) {
-  const { finalInitPacket, patchedFirmware } = await generateDFUPackage(
-    accessory,
-    firmware,
-    pattern,
-    privateKey,
-  );
+  const publicKey = getAdvertisementKey(accessory.privateKey, pattern.length);
+  const patchedFirmware = patchFirmware(firmware, pattern, publicKey);
+  const initPacket = generateDFUPackage(patchedFirmware, privateKey);
   return createZipBuffer([
-    { data: manifestBuffer, name: 'manifest.json' },
-    { data: finalInitPacket, name: 'initpacket.dat' },
+    { data: manifest, name: 'manifest.json' },
+    { data: initPacket, name: 'initpacket.dat' },
     { data: patchedFirmware, name: 'firmware.bin' },
   ]);
 }
