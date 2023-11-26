@@ -1,4 +1,4 @@
-# NavyTooth
+# blu-transmogrifier
 
 ## Prerequisites
 
