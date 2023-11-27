@@ -15,9 +15,7 @@ export default function createZipBuffer(files: File[]) {
       data.push(chunk);
     });
 
-    const archive = archiver('zip', {
-      zlib: { level: 9 },
-    });
+    const archive = archiver('zip');
 
     archive.on('warning', console.warn);
     archive.on('error', reject);
