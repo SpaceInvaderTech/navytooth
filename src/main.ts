@@ -47,24 +47,22 @@ function signData(data: Buffer, privateKey: Buffer) {
     key: privateKey,
     dsaEncoding: 'ieee-p1363',
   });
-  // The signature is a Buffer; split it into two 32-byte parts and reverse each part
-  const r = Buffer.from(signature.slice(0, 32));
-  const s = Buffer.from(signature.slice(32, 64));
+  // Split the buffer into two 32-byte parts and reverse each part
+  const r = Buffer.from(signature.subarray(0, 32));
+  const s = Buffer.from(signature.subarray(32, 64));
   return Buffer.concat([r.reverse(), s.reverse()]);
 }
 
+// https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L63-L148
 function generateInitPacket(firmwarePatched: Buffer, privateKey: Buffer) {
   const firmwareHash = hashFirmware(firmwarePatched);
   const initPacket = Buffer.concat([
-    packet.init,
+    packet.body,
     firmwareHash,
     packet.fixedData,
   ]);
-  const signature = signData(initPacket, privateKey);
-  // append the signature to the initPacket
-  const initPacketSigned = Buffer.concat([initPacket, signature]);
-  // Prepend the initPacket header
-  return Buffer.concat([packet.header, initPacketSigned]);
+  const initPacketSigned = signData(initPacket, privateKey);
+  return Buffer.concat([packet.header, initPacket, initPacketSigned]);
 }
 
 export default function makeFirmware(
