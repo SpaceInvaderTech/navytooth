@@ -1,3 +1,4 @@
+import type { KeyObject } from 'node:crypto';
 import { createECDH, createHash, createSign } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { packet, manifest } from './constants';
@@ -5,7 +6,7 @@ import { packet, manifest } from './constants';
 type PacketProps = {
   firmware: Buffer;
   pattern: string;
-  privateKey: Buffer;
+  privateKey: KeyObject;
   privateKeyForAccessory?: Buffer;
 };
 
@@ -52,7 +53,7 @@ function hashFirmware(firmwarePatched: Buffer) {
 }
 
 // https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/signing.py#L90-L101
-function signData(data: Buffer, privateKey: Buffer) {
+function signData(data: Buffer, privateKey: KeyObject) {
   // Create a Sign object with SHA256 as hashing algorithm
   const sign = createSign('SHA256').update(data).end();
   // Sign the data using the private key and specify the output format
@@ -67,7 +68,7 @@ function signData(data: Buffer, privateKey: Buffer) {
 }
 
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L63-L148
-function generateInitPacket(firmwarePatched: Buffer, privateKey: Buffer) {
+function generateInitPacket(firmwarePatched: Buffer, privateKey: KeyObject) {
   const firmwareHash = hashFirmware(firmwarePatched);
   const initPacket = Buffer.concat([
     packet.body,
