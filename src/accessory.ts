@@ -4,9 +4,9 @@ import { createECDH } from 'node:crypto';
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift
 
 function makePrivateKey() {
-  const curve = createECDH('secp224r1');
-  curve.generateKeys();
-  return curve.getPrivateKey();
+  const exchange = createECDH('secp224r1');
+  exchange.generateKeys();
+  return exchange.getPrivateKey();
 }
 
 export default function makeAccessory(): Accessory {
