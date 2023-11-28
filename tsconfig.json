@@ -5,7 +5,7 @@
     "noEmit": true,
     "rootDir": "src",
     "declaration": true,
-    "declarationDir": "output"
+    "declarationDir": "dist"
   },
   "exclude": [
     "test/**/*"

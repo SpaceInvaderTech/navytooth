@@ -1,16 +1,14 @@
 import { Buffer } from 'node:buffer';
 
 // DFU package manifest
-export const manifest = Buffer.from(
-  JSON.stringify({
-    manifest: {
-      application: {
-        bin_file: 'firmware.bin',
-        dat_file: 'initpacket.dat',
-      },
+export const manifest = Object.freeze({
+  manifest: {
+    application: {
+      bin_file: 'firmware.bin',
+      dat_file: 'initpacket.dat',
     },
-  }),
-);
+  },
+});
 
 // DFU package constants
 export const packet = Object.freeze({

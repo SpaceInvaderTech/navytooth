@@ -1,7 +1,20 @@
 import { createECDH, createHash, createSign } from 'node:crypto';
 import { Buffer } from 'node:buffer';
-import type { Accessory } from './types';
 import { packet, manifest } from './constants';
+
+type PacketProps = {
+  firmware: Buffer;
+  pattern: string;
+  privateKey: Buffer;
+  privateKeyForAccessory?: Buffer;
+};
+
+// Private key for the accessory
+function makePrivateKey() {
+  const exchange = createECDH('secp224r1');
+  exchange.generateKeys();
+  return exchange.getPrivateKey();
+}
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
 function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
@@ -65,13 +78,13 @@ function generateInitPacket(firmwarePatched: Buffer, privateKey: Buffer) {
   return Buffer.concat([packet.header, initPacket, initPacketSigned]);
 }
 
-export default function makeFirmware(
-  accessory: Accessory,
-  firmware: Buffer,
-  pattern: string,
-  privateKey: Buffer,
-) {
-  const publicKey = getAdvertisementKey(accessory.privateKey);
+export default function makePacket({
+  firmware,
+  pattern,
+  privateKey,
+  privateKeyForAccessory = makePrivateKey(),
+}: PacketProps) {
+  const publicKey = getAdvertisementKey(privateKeyForAccessory);
   const firmwarePatched = patchFirmware(firmware, pattern, publicKey);
   const initPacket = generateInitPacket(firmwarePatched, privateKey);
   return {
