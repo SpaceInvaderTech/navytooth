@@ -9,14 +9,14 @@ type File = {
 export default function createZipBuffer(files: File[]) {
   return new Promise<Buffer>((resolve, reject) => {
     const bufferStream = new PassThrough();
-    const data: Uint8Array[] = [];
+    const body: Uint8Array[] = [];
     bufferStream.on('data', (chunk: Uint8Array) => {
-      data.push(chunk);
+      body.push(chunk);
     });
     const archive = archiver('zip');
     archive.on('warning', console.warn);
     archive.on('error', reject);
-    archive.on('end', () => resolve(Buffer.concat(data)));
+    archive.on('end', () => resolve(Buffer.concat(body)));
     archive.pipe(bufferStream);
     for (const { data, name } of files) {
       archive.append(data, { name });
