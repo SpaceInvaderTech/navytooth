@@ -7,6 +7,7 @@ import { readFile } from 'node:fs/promises';
 import { writeFile } from 'node:fs/promises';
 import makeAccessory from '../src/accessory';
 import makeFirmware from '../src/main';
+import createZipBuffer from '../src/zip';
 
 const firmwarePath =
   '../openhaystack/OpenHaystack/OpenHaystack/HaystackApp/Firmwares/Moko/nrf52810_xxaa.bin';
@@ -24,12 +25,17 @@ test('makeFirmware', async () => {
   const firmwareBuffer = await readFile(firmwarePath);
   // const privateKey = keyBufferToKeyObject(await readFile(privateKeyPath));
   const privateKey = await readFile(privateKeyPath);
-  const zipBuffer = await makeFirmware(
+  const { manifest, initPacket, firmwarePatched } = makeFirmware(
     accessory,
     firmwareBuffer,
     pattern,
     privateKey,
   );
+  const zipBuffer = await createZipBuffer([
+    { data: manifest, name: 'manifest.json' },
+    { data: initPacket, name: 'initpacket.dat' },
+    { data: firmwarePatched, name: 'firmware.bin' },
+  ]);
   console.log(zipBuffer.length);
   await writeFile('firmware.zip', zipBuffer);
 });
