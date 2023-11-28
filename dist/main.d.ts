@@ -1,9 +1,11 @@
 /// <reference types="node" />
+/// <reference types="node" />
+import type { KeyObject } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 type PacketProps = {
     firmware: Buffer;
     pattern: string;
-    privateKey: Buffer;
+    privateKey: KeyObject;
     privateKeyForAccessory?: Buffer;
 };
 export default function makePacket({ firmware, pattern, privateKey, privateKeyForAccessory, }: PacketProps): {
