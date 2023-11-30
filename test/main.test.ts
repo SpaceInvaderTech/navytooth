@@ -13,7 +13,8 @@ const privateKeyPath = '../private.key';
 
 test('makePacket', async () => {
   const firmware = await readFile(firmwarePath);
-  const privateKey = createPrivateKey(await readFile(privateKeyPath));
+  const privateKeyBuffer = await readFile(privateKeyPath);
+  const privateKey = createPrivateKey(privateKeyBuffer);
   const { manifest, initPacket, firmwarePatched } = makePacket({
     firmware,
     pattern,
