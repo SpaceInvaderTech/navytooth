@@ -3,6 +3,7 @@ import type { BinaryLike, KeyObject } from 'node:crypto';
 import { createECDH, createHash, createSign } from 'node:crypto';
 
 // Private key for the accessory
+// https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift#L70
 export function makePrivateKey() {
   const exchange = createECDH('secp224r1');
   exchange.generateKeys();
