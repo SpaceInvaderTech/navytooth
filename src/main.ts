@@ -1,7 +1,7 @@
 import type { KeyObject } from 'node:crypto';
-import { createECDH, createHash } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { manifest } from './constants';
+import { getAdvertisementKey, hashFirmware, makePrivateKey } from './crypt';
 import makeInitPacket from './proto/initPacket';
 
 type PacketProps = {
@@ -10,13 +10,6 @@ type PacketProps = {
   privateKey: KeyObject;
   privateKeyForAccessory?: Buffer;
 };
-
-// Private key for the accessory
-function makePrivateKey() {
-  const exchange = createECDH('secp224r1');
-  exchange.generateKeys();
-  return exchange.getPrivateKey();
-}
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
 function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
@@ -35,22 +28,6 @@ function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
   // Replace the pattern in the firmware with the public key
   publicKey.copy(patchedFirmware, patternIndex);
   return patchedFirmware;
-}
-
-// https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift#L154-L164
-function getAdvertisementKey(privateKey: Buffer) {
-  const exchange = createECDH('secp224r1');
-  exchange.setPrivateKey(privateKey);
-  const publicKey = exchange.getPublicKey(null, 'compressed');
-  return Buffer.from(publicKey.subarray(1));
-}
-
-// https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/package.py#L550-L566
-function hashFirmware(firmwarePatched: Buffer) {
-  // Calculate SHA256 of the patched firmware
-  const firmwareHash = createHash('sha256').update(firmwarePatched).digest();
-  // Convert to little endian format
-  return Buffer.from(firmwareHash.reverse());
 }
 
 export default async function makePacket({

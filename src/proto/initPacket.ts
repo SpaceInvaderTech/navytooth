@@ -1,24 +1,10 @@
-import type { BinaryLike, KeyObject } from 'node:crypto';
+import type { KeyObject } from 'node:crypto';
 import { join as pathJoin } from 'node:path';
 import { Buffer } from 'node:buffer';
-import { createSign } from 'crypto';
 import { load } from 'protobufjs';
+import { signData } from '../crypt';
 
 const protoFilePath = pathJoin(__dirname, '/dfu-cc.proto');
-
-function signData(data: BinaryLike, privateKey: KeyObject) {
-  // Create a Sign object with SHA256 as hashing algorithm
-  const sign = createSign('SHA256').update(data).end();
-  // Sign the data using the private key and specify the output format
-  const signature = sign.sign({
-    key: privateKey,
-    dsaEncoding: 'ieee-p1363',
-  });
-  // Split the buffer into two 32-byte parts and reverse each part
-  const r = Buffer.from(signature.subarray(0, 32));
-  const s = Buffer.from(signature.subarray(32, 64));
-  return Buffer.concat([r.reverse(), s.reverse()]);
-}
 
 export default async function makeInitPacket(
   firmwareHash: Buffer,
