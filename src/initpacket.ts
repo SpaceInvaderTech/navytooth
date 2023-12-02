@@ -2,15 +2,21 @@ import { Buffer } from 'node:buffer';
 import { dfu } from './protobuf/dfu';
 import { signData } from './crypt';
 
+type InitPacket = {
+  firmwareHash: Buffer;
+  appSize: number;
+  privateKey: Buffer;
+};
+
 function handleVerify(errMsg: string | null) {
   if (errMsg) throw Error(errMsg);
 }
 
-export default function makeInitPacket(
-  firmwareHash: Buffer,
-  appSize: number,
-  privateKey: Buffer,
-) {
+export default function makeInitPacket({
+  firmwareHash,
+  appSize,
+  privateKey,
+}: InitPacket) {
   const initCommandProperties: Parameters<typeof dfu.InitCommand.create>[0] = {
     type: dfu.FwType.APPLICATION,
     fwVersion: 2, // firmware version

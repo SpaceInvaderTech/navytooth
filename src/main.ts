@@ -36,11 +36,12 @@ export default function makePacket({
   const privateKeyForAccessory = makePrivateKey();
   const publicKey = getAdvertisementKey(privateKeyForAccessory);
   const firmwarePatched = patchFirmware(firmware, pattern, publicKey);
-  const initPacket = makeInitPacket(
-    hashFirmware(firmwarePatched),
-    firmwarePatched.byteLength,
+  const firmwareHash = hashFirmware(firmwarePatched);
+  const initPacket = makeInitPacket({
+    firmwareHash,
+    appSize: firmwarePatched.byteLength,
     privateKey,
-  );
+  });
   return {
     manifest,
     initPacket,
