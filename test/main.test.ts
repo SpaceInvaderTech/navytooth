@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-ignore
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
 // import { createPrivateKey } from 'node:crypto';

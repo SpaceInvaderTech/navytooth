@@ -3,7 +3,6 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "noEmit": true,
-    "rootDir": "src",
     "declaration": true,
     "declarationDir": "dist"
   },
