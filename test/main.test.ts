@@ -7,13 +7,13 @@ import createZipBuffer from '../src/zip';
 const firmwarePath =
   '../openhaystack/OpenHaystack/OpenHaystack/HaystackApp/Firmwares/Moko/nrf52810_xxaa.bin';
 const pattern = 'OFFLINEFINDINGPUBLICKEYHERE!';
-const privateKeyPath = '../private.key';
+const privateKeyPath = '../private.pem';
 
 test('makePacket & zip', async () => {
   const firmware = await readFile(firmwarePath);
   const privateKeyBuffer = await readFile(privateKeyPath);
   // const privateKey = createPrivateKey(privateKeyBuffer);
-  const { manifest, initPacket, firmwarePatched } = await makePacket({
+  const { manifest, initPacket, firmwarePatched } = makePacket({
     firmware,
     pattern,
     privateKey: privateKeyBuffer,
