@@ -2,10 +2,10 @@
 import { Buffer } from 'node:buffer';
 type PacketProps = {
     firmware: Buffer;
-    pattern: string;
     privateKey: Buffer;
+    pattern?: string;
 };
-export default function makePacket({ firmware, pattern, privateKey, }: PacketProps): {
+export default function makePacket({ firmware, privateKey, pattern, }: PacketProps): {
     manifest: Readonly<{
         manifest: {
             application: {
