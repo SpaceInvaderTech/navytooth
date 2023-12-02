@@ -1,14 +1,11 @@
 /// <reference types="node" />
-/// <reference types="node" />
-import type { KeyObject } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 type PacketProps = {
     firmware: Buffer;
     pattern: string;
-    privateKey: KeyObject;
-    privateKeyForAccessory?: Buffer;
+    privateKey: Buffer;
 };
-export default function makePacket({ firmware, pattern, privateKey, privateKeyForAccessory, }: PacketProps): {
+export default function makePacket({ firmware, pattern, privateKey, }: PacketProps): Promise<{
     manifest: Readonly<{
         manifest: {
             application: {
@@ -19,5 +16,6 @@ export default function makePacket({ firmware, pattern, privateKey, privateKeyFo
     }>;
     initPacket: Buffer;
     firmwarePatched: Buffer;
-};
+    privateKeyForAccessory: Buffer;
+}>;
 export {};
