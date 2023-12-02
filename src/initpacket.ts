@@ -12,7 +12,8 @@ export default function makeInitPacket(
   privateKey: Buffer,
 ) {
   const initCommandProperties: Parameters<typeof dfu.InitCommand.create>[0] = {
-    fwVersion: dfu.FwType.SOFTDEVICE,
+    type: dfu.FwType.APPLICATION,
+    fwVersion: 2, // firmware version
     hwVersion: 52, // hardware version
     sdReq: [0x0103], // soft device requirements
     appSize, // application size
