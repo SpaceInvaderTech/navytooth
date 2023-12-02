@@ -28,7 +28,7 @@ function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
   return patchedFirmware;
 }
 
-export default async function makePacket({
+export default function makePacket({
   firmware,
   pattern,
   privateKey,
@@ -36,7 +36,7 @@ export default async function makePacket({
   const privateKeyForAccessory = makePrivateKey();
   const publicKey = getAdvertisementKey(privateKeyForAccessory);
   const firmwarePatched = patchFirmware(firmware, pattern, publicKey);
-  const initPacket = await makeInitPacket(
+  const initPacket = makeInitPacket(
     hashFirmware(firmwarePatched),
     firmwarePatched.byteLength,
     privateKey,
