@@ -5,7 +5,7 @@ type PacketProps = {
     pattern: string;
     privateKey: Buffer;
 };
-export default function makePacket({ firmware, pattern, privateKey, }: PacketProps): Promise<{
+export default function makePacket({ firmware, pattern, privateKey, }: PacketProps): {
     manifest: Readonly<{
         manifest: {
             application: {
@@ -14,8 +14,8 @@ export default function makePacket({ firmware, pattern, privateKey, }: PacketPro
             };
         };
     }>;
-    initPacket: Buffer;
+    initPacket: Uint8Array;
     firmwarePatched: Buffer;
     privateKeyForAccessory: Buffer;
-}>;
+};
 export {};
