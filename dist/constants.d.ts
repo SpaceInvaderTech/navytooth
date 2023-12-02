@@ -1,5 +1,3 @@
-/// <reference types="node" />
-import { Buffer } from 'node:buffer';
 export declare const manifest: Readonly<{
     manifest: {
         application: {
@@ -7,9 +5,4 @@ export declare const manifest: Readonly<{
             dat_file: string;
         };
     };
-}>;
-export declare const packet: Readonly<{
-    header: Buffer;
-    body: Buffer;
-    fixedData: Buffer;
 }>;

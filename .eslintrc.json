@@ -1,4 +1,5 @@
 {
+  "root": true,
   "env": {
     "es6": true,
     "node": true
@@ -9,6 +10,9 @@
     "plugin:prettier/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "root": true,
-  "ignorePatterns": ["output/*"]
+  "ignorePatterns": [
+    "dist/*",
+    "src/protobuf/*.js",
+    "src/protobuf/*.d.ts"
+  ]
 }
