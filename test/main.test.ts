@@ -1,7 +1,7 @@
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
 import makePacket from '../src/main';
-import createZipBuffer from '../src/zip';
+import createZipBuffer from './zip';
 
 const firmwarePath =
   '../openhaystack/OpenHaystack/OpenHaystack/HaystackApp/Firmwares/Moko/nrf52810_xxaa.bin';
@@ -21,6 +21,8 @@ test('makePacket & zip', async () => {
     { data: firmwarePatched, name: manifest.manifest.application.bin_file },
   ]);
   expect(zipBuffer.length).toBeTruthy();
-  await writeFile('firmware.zip', zipBuffer);
-  console.log('firmware.zip created');
+  // zip
+  const zipFilePath = 'firmware.zip';
+  await writeFile(zipFilePath, zipBuffer);
+  console.log('Created', zipFilePath);
 });
