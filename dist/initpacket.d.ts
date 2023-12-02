@@ -1,3 +1,9 @@
 /// <reference types="node" />
 import { Buffer } from 'node:buffer';
-export default function makeInitPacket(firmwareHash: Buffer, appSize: number, privateKey: Buffer): Uint8Array;
+type InitPacket = {
+    firmwareHash: Buffer;
+    appSize: number;
+    privateKey: Buffer;
+};
+export default function makeInitPacket({ firmwareHash, appSize, privateKey, }: InitPacket): Uint8Array;
+export {};
