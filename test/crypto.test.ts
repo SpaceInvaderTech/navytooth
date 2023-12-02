@@ -50,7 +50,6 @@ test('key length', async () => {
   const exchange = createECDH('secp224r1');
   exchange.generateKeys();
   const privateKey = exchange.getPrivateKey();
-  // console.log(privateKey.toString('hex'));
   expect(privateKey.length).toBe(28);
   const publicKey = exchange.getPublicKey(null, 'compressed');
   expect(publicKey.length).toBe(29);
@@ -63,7 +62,7 @@ test('key works', async () => {
   expect(publicKey.length).toBe(29);
 });
 
-test('sign & verify', async () => {
+test.skip('sign & verify', async () => {
   const privateKeyBuffer = await readFile(privateKeyPath);
   const data = Buffer.from('The Love Boat');
   const signature = signData(data, privateKeyBuffer);

@@ -23,9 +23,8 @@ export function getAdvertisementKey(privateKey: Buffer) {
 export function hashFirmware(firmwarePatched: Buffer) {
   // Calculate SHA256 of the patched firmware
   const firmwareHash = createHash('sha256').update(firmwarePatched).digest();
-  return firmwareHash;
   // // Convert to little endian format
-  // return Buffer.from(firmwareHash.reverse());
+  return Buffer.from(firmwareHash.reverse());
 }
 
 // https://github.com/particle-iot/nrf5_sdk/blob/6e1eefb699dc6dd9e43b232113eb5cb865cc6638/components/libraries/ecc/ecc.c#L178-L204
@@ -39,10 +38,9 @@ export function signData(data: BinaryLike, privateKey: Buffer) {
     key: privateKey,
     dsaEncoding: 'ieee-p1363',
   });
-  return signature;
-  // // Convert signature to little-endian
-  // const r = signature.subarray(0, 32); // First 32 bytes for R
-  // const s = signature.subarray(32, 64); // Next 32 bytes for S
-  // // Reverse both R and S components for little-endian format
-  // return Buffer.concat([r.reverse(), s.reverse()]);
+  // Convert signature to little-endian
+  const r = signature.subarray(0, 32); // First 32 bytes for R
+  const s = signature.subarray(32, 64); // Next 32 bytes for S
+  // Reverse both R and S components for little-endian format
+  return Buffer.concat([r.reverse(), s.reverse()]);
 }
