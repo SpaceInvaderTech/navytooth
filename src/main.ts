@@ -5,8 +5,8 @@ import makeInitPacket from './initpacket';
 
 type PacketProps = {
   firmware: Buffer;
-  pattern: string;
   privateKey: Buffer;
+  pattern?: string;
 };
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
@@ -30,8 +30,8 @@ function patchFirmware(firmware: Buffer, pattern: string, publicKey: Buffer) {
 
 export default function makePacket({
   firmware,
-  pattern,
   privateKey,
+  pattern = 'OFFLINEFINDINGPUBLICKEYHERE!',
 }: PacketProps) {
   const privateKeyForAccessory = makePrivateKey();
   const publicKey = getAdvertisementKey(privateKeyForAccessory);
