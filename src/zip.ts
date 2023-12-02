@@ -2,7 +2,7 @@ import { PassThrough } from 'node:stream';
 import archiver from 'archiver';
 
 type File = {
-  data: Buffer;
+  data: Uint8Array;
   name: string;
 };
 
@@ -10,7 +10,7 @@ export default function createZipBuffer(files: File[]) {
   return new Promise<Buffer>((resolve, reject) => {
     const bufferStream = new PassThrough();
     const body: Uint8Array[] = [];
-    bufferStream.on('data', (chunk: Uint8Array) => {
+    bufferStream.on('data', (chunk) => {
       body.push(chunk);
     });
     const archive = archiver('zip');
@@ -19,7 +19,7 @@ export default function createZipBuffer(files: File[]) {
     archive.on('end', () => resolve(Buffer.concat(body)));
     archive.pipe(bufferStream);
     for (const { data, name } of files) {
-      archive.append(data, { name });
+      archive.append(Buffer.from(data), { name });
     }
     archive.finalize();
   });
