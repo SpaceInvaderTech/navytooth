@@ -2,7 +2,7 @@
 // @ts-ignore
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
-import { createPrivateKey } from 'node:crypto';
+// import { createPrivateKey } from 'node:crypto';
 import makePacket from '../src/main';
 import createZipBuffer from '../src/zip';
 
@@ -11,14 +11,14 @@ const firmwarePath =
 const pattern = 'OFFLINEFINDINGPUBLICKEYHERE!';
 const privateKeyPath = '../private.key';
 
-test('makePacket', async () => {
+test('makePacket & zip', async () => {
   const firmware = await readFile(firmwarePath);
   const privateKeyBuffer = await readFile(privateKeyPath);
-  const privateKey = createPrivateKey(privateKeyBuffer);
+  // const privateKey = createPrivateKey(privateKeyBuffer);
   const { manifest, initPacket, firmwarePatched } = await makePacket({
     firmware,
     pattern,
-    privateKey,
+    privateKey: privateKeyBuffer,
   });
   expect(initPacket.length).toBeTruthy();
   const zipBuffer = await createZipBuffer([
@@ -27,6 +27,6 @@ test('makePacket', async () => {
     { data: firmwarePatched, name: manifest.manifest.application.bin_file },
   ]);
   expect(zipBuffer.length).toBeTruthy();
-  console.log(zipBuffer.length);
   await writeFile('firmware.zip', zipBuffer);
+  console.log('firmware.zip created');
 });
