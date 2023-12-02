@@ -1,14 +1,12 @@
-import type { KeyObject } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { manifest } from './constants';
 import { getAdvertisementKey, hashFirmware, makePrivateKey } from './crypt';
-import makeInitPacket from './proto/initPacket';
+import makeInitPacket from './initpacket';
 
 type PacketProps = {
   firmware: Buffer;
   pattern: string;
-  privateKey: KeyObject;
-  privateKeyForAccessory?: Buffer;
+  privateKey: Buffer;
 };
 
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
@@ -34,8 +32,8 @@ export default async function makePacket({
   firmware,
   pattern,
   privateKey,
-  privateKeyForAccessory = makePrivateKey(),
 }: PacketProps) {
+  const privateKeyForAccessory = makePrivateKey();
   const publicKey = getAdvertisementKey(privateKeyForAccessory);
   const firmwarePatched = patchFirmware(firmware, pattern, publicKey);
   const initPacket = await makeInitPacket(
@@ -47,5 +45,6 @@ export default async function makePacket({
     manifest,
     initPacket,
     firmwarePatched,
+    privateKeyForAccessory,
   };
 }
