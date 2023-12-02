@@ -8,17 +8,17 @@ export default function makeInitPacket(
   privateKey: Buffer,
 ) {
   const initCommandMessage = dfu.InitCommand.create({
-    fwVersion: 1, // firmware version
+    fwVersion: dfu.FwType.SOFTDEVICE,
     hwVersion: 52, // hardware version
     sdReq: [0x0103], // soft device requirements
     appSize, // application size
     hash: {
-      hashType: 3, // SHA256
+      hashType: dfu.HashType.SHA256,
       hash: firmwareHash, // firmware hash
     },
     bootValidation: [
       {
-        type: 1, // VALIDATE_GENERATED_CRC
+        type: dfu.ValidationType.VALIDATE_GENERATED_CRC,
         bytes: Buffer.alloc(0), // empty byte array
       },
     ],
@@ -26,7 +26,7 @@ export default function makeInitPacket(
 
   // Create the command message
   const commandMessage = dfu.Command.create({
-    opCode: 1, // INIT
+    opCode: dfu.OpCode.INIT,
     init: initCommandMessage,
   });
 
@@ -37,7 +37,7 @@ export default function makeInitPacket(
   // Create the signed command message
   const signedCommandMessage = dfu.SignedCommand.create({
     command: commandMessage,
-    signatureType: 0, // ECDSA_P256_SHA256
+    signatureType: dfu.SignatureType.ECDSA_P256_SHA256,
     signature: signature,
   });
 
@@ -51,5 +51,5 @@ export default function makeInitPacket(
   if (errMsg) throw Error(errMsg);
 
   // Encode the packet message to a buffer
-  return Buffer.from(dfu.Packet.encode(packetMessage).finish());
+  return dfu.Packet.encode(packetMessage).finish();
 }
