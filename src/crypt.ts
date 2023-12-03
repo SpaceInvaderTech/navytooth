@@ -28,15 +28,16 @@ export function hashFirmware(firmwarePatched: Buffer) {
 
 // https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/signing.py#L90-L101
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L35-L40
+// https://github.com/DiUS/nRF5-SDK-15.3.0-reduced/blob/master/components/libraries/bootloader/dfu/nrf_dfu_validation.c#L341-L417
 export function signData(data: Uint8Array, privateKey: Buffer) {
   // make ECDSA_P256_SHA256 signature
   const signature = sign(null, data, {
     key: privateKey,
     dsaEncoding: 'ieee-p1363',
   });
-  // Convert signature to little-endian
-  const r = signature.subarray(0, 32); // First 32 bytes for R
-  const s = signature.subarray(32, 64); // Next 32 bytes for S
-  // Reverse both R and S components for little-endian format
-  return Buffer.concat([r.reverse(), s.reverse()]);
+  // Reverse the R and S components for little-endian format
+  return Buffer.concat([
+    Buffer.from(signature.subarray(0, 32)).reverse(),
+    Buffer.from(signature.subarray(32, 64)).reverse(),
+  ]);
 }
