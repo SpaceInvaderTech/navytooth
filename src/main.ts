@@ -41,6 +41,7 @@ export default function makePacket({
     firmwareHash,
     appSize: firmwarePatched.byteLength,
     privateKey,
+    verify: true,
   });
   return {
     manifest,
