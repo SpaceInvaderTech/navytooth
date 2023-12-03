@@ -27,7 +27,6 @@ export function hashFirmware(firmwarePatched: Buffer) {
   return Buffer.from(firmwareHash.reverse());
 }
 
-// https://github.com/particle-iot/nrf5_sdk/blob/6e1eefb699dc6dd9e43b232113eb5cb865cc6638/components/libraries/ecc/ecc.c#L178-L204
 // https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/signing.py#L90-L101
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L35-L40
 export function signData(data: BinaryLike, privateKey: Buffer) {
