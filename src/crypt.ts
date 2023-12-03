@@ -1,6 +1,5 @@
 import { Buffer } from 'node:buffer';
-import type { BinaryLike } from 'node:crypto';
-import { createECDH, createHash, createSign } from 'node:crypto';
+import { createECDH, createHash, sign } from 'node:crypto';
 
 // Private key for the accessory where the public key is used for  Find My network
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/Model/Accessory.swift#L70
@@ -29,11 +28,9 @@ export function hashFirmware(firmwarePatched: Buffer) {
 
 // https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/signing.py#L90-L101
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L35-L40
-export function signData(data: BinaryLike, privateKey: Buffer) {
-  // Create a Sign object with SHA256 as hashing algorithm
-  const sign = createSign('SHA256').update(data).end();
-  // Sign the data using the private key and specify the output format
-  const signature = sign.sign({
+export function signData(data: Uint8Array, privateKey: Buffer) {
+  // make ECDSA_P256_SHA256 signature
+  const signature = sign(null, data, {
     key: privateKey,
     dsaEncoding: 'ieee-p1363',
   });
