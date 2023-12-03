@@ -22,22 +22,26 @@ export function getAdvertisementKey(privateKey: Buffer) {
 export function hashFirmware(firmwarePatched: Buffer) {
   // Calculate SHA256 of the patched firmware
   const firmwareHash = createHash('sha256').update(firmwarePatched).digest();
-  // // Convert to little endian format
+  // Convert to little endian format
   return Buffer.from(firmwareHash.reverse());
+}
+
+export function endianSwap(data: Uint8Array) {
+  return Buffer.concat([
+    Buffer.from(data.subarray(0, 32)).reverse(),
+    Buffer.from(data.subarray(32, 64)).reverse(),
+  ]);
 }
 
 // https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/signing.py#L90-L101
 // https://github.com/SpaceInvaderTech/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/SpaceInvaderController.swift#L35-L40
 // https://github.com/DiUS/nRF5-SDK-15.3.0-reduced/blob/master/components/libraries/bootloader/dfu/nrf_dfu_validation.c#L341-L417
 export function signData(data: Uint8Array, privateKey: Buffer) {
-  // make ECDSA_P256_SHA256 signature
-  const signature = sign(null, data, {
-    key: privateKey,
-    dsaEncoding: 'ieee-p1363',
-  });
-  // Reverse the R and S components for little-endian format
-  return Buffer.concat([
-    Buffer.from(signature.subarray(0, 32)).reverse(),
-    Buffer.from(signature.subarray(32, 64)).reverse(),
-  ]);
+  // make ECDSA_P256_SHA256 signature in little-endian format
+  return endianSwap(
+    sign(null, data, {
+      key: privateKey,
+      dsaEncoding: 'ieee-p1363',
+    }),
+  );
 }
