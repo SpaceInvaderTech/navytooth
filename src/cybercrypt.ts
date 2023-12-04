@@ -12,6 +12,7 @@ const algorithmVerify: webcrypto.EcdsaParams = {
 const keyUsages: webcrypto.KeyUsage[] = ['verify'];
 const pemRegex = /----\n([\s\S]+)\n----/;
 
+// Convert KeyObject to CryptoKey
 function keyObjectToCryptoKey(publicKey: KeyObject) {
   const pemKey = publicKey.export({
     type: 'spki',
