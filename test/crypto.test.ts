@@ -9,6 +9,7 @@ import {
 import { getAdvertisementKey, signData, endianSwap } from '../src/crypt';
 import { validateSignature } from '../src/cybercrypt';
 
+// ecdsa-sha2-nistp256
 const privateKeyPath = '../private.pem';
 
 // from plist for EA140CF93E0D
