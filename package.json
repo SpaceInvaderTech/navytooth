@@ -32,7 +32,7 @@
     "clean": "rm -rf ./dist",
     "prebuild": "bun run test && bun run type:check && bun run lint && bun run clean && bun run type:build",
     "build": "bun build ./src/main.ts --outdir=./dist --target=node --minify",
-    "protobuf:compile": "pbjs --es6 --wrap es6 --target static-module --out src/protobuf/dfu.js src/protobuf/dfu-cc.proto",
+    "protobuf:compile": "pbjs --es6 --wrap es6 --target static-module --out src/protobuf/dfu.js src/protobuf/dfu.proto",
     "protobuf:compile:type": "pbts --out src/protobuf/dfu.d.ts src/protobuf/dfu.js",
     "protobuf:build": "bun run protobuf:compile && bun run protobuf:compile:type",
     "lint": "eslint src --ext .ts",

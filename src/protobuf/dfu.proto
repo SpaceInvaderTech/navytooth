@@ -1,8 +1,14 @@
 package dfu;
 
-// https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/dfu-cc.proto
+/*
+  This file is from the nRF Util project.
+  License: MIT
+  https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/dfu-cc.proto
+*/
 
-// Definition of enums and types
+// https://github.com/NordicSemiconductor/pc-nrfutil/blob/master/nordicsemi/dfu/dfu_cc_pb2.py#L21
+syntax = "proto2";
+
 enum OpCode {
   RESET = 0;
   INIT = 1;
@@ -41,7 +47,6 @@ message BootValidation {
   required bytes bytes = 2;
 }
 
-// Commands data
 message InitCommand {
   optional uint32 fw_version = 1;
   optional uint32 hw_version = 2;
@@ -57,14 +62,12 @@ message InitCommand {
 
 message ResetCommand { required uint32 timeout = 1; }
 
-// Command type
 message Command {
   optional OpCode op_code = 1;
   optional InitCommand init = 2;
   optional ResetCommand reset = 3;
 }
 
-// Signed command types
 enum SignatureType {
   ECDSA_P256_SHA256 = 0;
   ED25519 = 1;
@@ -76,7 +79,6 @@ message SignedCommand {
   required bytes signature = 3;
 }
 
-// Parent packet type
 message Packet {
   optional Command command = 1;
   optional SignedCommand signed_command = 2;
