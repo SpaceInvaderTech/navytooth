@@ -4,6 +4,7 @@ import makePacket from '../src/main';
 import createZipBuffer from './zip';
 
 const firmwarePath = './test/nrf52810_xxaa.bin';
+// nrfutil keys generate
 const privateKeyPath = '../private.pem';
 
 test('makePacket & zip', async () => {
