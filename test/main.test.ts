@@ -3,8 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import makePacket from '../src/main';
 import createZipBuffer from './zip';
 
-const firmwarePath =
-  '../openhaystack/OpenHaystack/OpenHaystack/HaystackApp/Firmwares/Moko/nrf52810_xxaa.bin';
+const firmwarePath = './test/nrf52810_xxaa.bin';
 const privateKeyPath = '../private.pem';
 
 test('makePacket & zip', async () => {
