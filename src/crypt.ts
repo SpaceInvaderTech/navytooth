@@ -1,6 +1,5 @@
-import type { KeyObject } from 'node:crypto';
 import { Buffer } from 'node:buffer';
-import type { DSAEncoding } from 'node:crypto';
+import type { DSAEncoding, KeyObject } from 'node:crypto';
 import { createECDH, createHash, sign } from 'node:crypto';
 
 // P-224 elliptic curve used for the accessory
