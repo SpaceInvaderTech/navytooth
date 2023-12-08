@@ -17,8 +17,12 @@ export default function makePacket({
   pattern = 'OFFLINEFINDINGPUBLICKEYHERE!',
 }: PacketProps) {
   const privateKeyForAccessory = makePrivateKey();
-  const publicKey = getAdvertisementKey(privateKeyForAccessory);
-  const firmwarePatched = patchFirmware(firmware, pattern, publicKey);
+  const publicKeyForAccessory = getAdvertisementKey(privateKeyForAccessory);
+  const firmwarePatched = patchFirmware(
+    firmware,
+    pattern,
+    publicKeyForAccessory,
+  );
   const firmwareHash = hashLE(firmwarePatched);
   const initPacket = makeInitPacket({
     firmwareHash,
