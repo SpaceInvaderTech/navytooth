@@ -1,4 +1,3 @@
 /// <reference types="node" />
-/// <reference types="node" />
 import type { KeyObject } from 'node:crypto';
-export declare function validateSignature(data: Buffer, signature: Buffer, publicKey: KeyObject): Promise<boolean>;
+export declare function validateSignature(data: Uint8Array, signature: Uint8Array, publicKey: KeyObject): Promise<boolean>;

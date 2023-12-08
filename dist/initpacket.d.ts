@@ -1,9 +1,9 @@
 /// <reference types="node" />
-import { Buffer } from 'node:buffer';
+import type { KeyObject } from 'node:crypto';
 import { dfu } from './protobuf/dfu';
 type InitCommandParameters = NonNullable<Parameters<typeof dfu.InitCommand.create>[0]>;
 type MakeInitPacket = Pick<InitCommandParameters, 'appSize' | 'fwVersion' | 'hwVersion' | 'sdReq' | 'isDebug'> & {
-    privateKey: Buffer;
+    privateKey: KeyObject;
     firmwareHash: NonNullable<InitCommandParameters['hash']>['hash'];
     verify?: boolean;
 };
