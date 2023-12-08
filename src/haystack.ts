@@ -14,8 +14,7 @@ export function patchFirmware(
   // Find the position of the pattern in the firmware
   const patternIndex = firmware.indexOf(patternBuffer);
   if (patternIndex === -1) {
-    return firmware;
-    // throw new Error('Pattern not found in firmware');
+    throw new Error('Pattern not found in firmware');
   }
   // Create a copy of the firmware to avoid mutating the original buffer
   const patchedFirmware = Buffer.from(firmware);

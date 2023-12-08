@@ -35,8 +35,6 @@ export default function makeInitPacket({
     hwVersion,
     sdReq,
     appSize,
-    blSize: 0,
-    sdSize: 0,
     isDebug,
     hash: {
       hashType: dfu.HashType.SHA256,
@@ -62,7 +60,7 @@ export default function makeInitPacket({
 
   // Sign
   const encodedCommandMessage = dfu.Command.encode(commandMessage).finish();
-  // strip the first 4 bytes (the presumed length)
+  // strip the first 4 bytes (the presumed length indicator)
   const commandMessageSigned = encodedCommandMessage.subarray(4);
   const signature = signDataLE(commandMessageSigned, privateKey);
 
