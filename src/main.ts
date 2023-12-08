@@ -1,4 +1,5 @@
 import type { Buffer } from 'node:buffer';
+import type { KeyObject } from 'node:crypto';
 import { getAdvertisementKey, hashLE, makePrivateKey } from './crypt';
 import { patchFirmware } from './haystack';
 import makeInitPacket from './initpacket';
@@ -6,7 +7,7 @@ import manifest from './manifest.json';
 
 type PacketProps = {
   firmware: Buffer;
-  privateKey: Buffer;
+  privateKey: KeyObject;
   pattern?: string;
 };
 

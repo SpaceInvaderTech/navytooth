@@ -1,5 +1,6 @@
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
+import { createPrivateKey } from 'node:crypto';
 import makePacket from '../src/main';
 import createZipBuffer from './zip';
 
@@ -9,7 +10,8 @@ const privateKeyPath = '../private.pem';
 
 test('makePacket & zip', async () => {
   const firmware = await readFile(firmwarePath);
-  const privateKey = await readFile(privateKeyPath);
+  const privateKeyBuffer = await readFile(privateKeyPath);
+  const privateKey = createPrivateKey(privateKeyBuffer);
   const { manifest, initPacket, firmwarePatched } = makePacket({
     firmware,
     privateKey,

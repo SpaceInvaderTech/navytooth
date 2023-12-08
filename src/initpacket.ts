@@ -1,3 +1,4 @@
+import type { KeyObject } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import { dfu } from './protobuf/dfu';
 import { signDataLE } from './crypt';
@@ -10,7 +11,7 @@ type MakeInitPacket = Pick<
   InitCommandParameters,
   'appSize' | 'fwVersion' | 'hwVersion' | 'sdReq' | 'isDebug'
 > & {
-  privateKey: Buffer;
+  privateKey: KeyObject;
   firmwareHash: NonNullable<InitCommandParameters['hash']>['hash'];
   verify?: boolean;
 };

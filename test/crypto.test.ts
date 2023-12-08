@@ -13,7 +13,7 @@ test('sign & verify', async () => {
   const publicKey = createPublicKey(privateKey);
   const data = Buffer.from('The Love Boat');
   const dataBad = Buffer.from('The sunk Boat');
-  const signature = signDataLE(data, privateKeyBuffer);
+  const signature = signDataLE(data, privateKey);
   expect(signature.length).toBe(64);
   expect(await validateSignature(data, endianSwap(signature), publicKey)).toBe(
     true,

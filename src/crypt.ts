@@ -1,3 +1,4 @@
+import type { KeyObject } from 'node:crypto';
 import { Buffer } from 'node:buffer';
 import type { DSAEncoding } from 'node:crypto';
 import { createECDH, createHash, sign } from 'node:crypto';
@@ -38,6 +39,6 @@ export function endianSwap(signature: Uint8Array) {
 }
 
 // ECDSA P256 SHA256 signature
-export function signDataLE(data: Uint8Array, key: Buffer) {
+export function signDataLE(data: Uint8Array, key: KeyObject) {
   return endianSwap(sign('sha256', data, { key, dsaEncoding }));
 }
