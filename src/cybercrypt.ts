@@ -36,10 +36,13 @@ function keyObjectToCryptoKey(publicKey: KeyObject) {
 }
 
 export async function validateSignature(
-  data: Buffer,
-  signature: Buffer,
+  data: Uint8Array,
+  signature: Uint8Array,
   publicKey: KeyObject,
 ) {
+  if (publicKey.type !== 'public') {
+    throw new Error('KeyObject must be a public key');
+  }
   const cryptoKey = await keyObjectToCryptoKey(publicKey);
   return subtle.verify(algorithmVerify, cryptoKey, signature, data);
 }

@@ -4,7 +4,8 @@
     "alwaysStrict": true,
     "noEmit": true,
     "declaration": true,
-    "declarationDir": "dist"
+    "declarationDir": "dist",
+    "resolveJsonModule": true
   },
   "exclude": [
     "test/**/*"

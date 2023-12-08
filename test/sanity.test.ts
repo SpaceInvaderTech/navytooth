@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'bun:test';
 import { readFile } from 'node:fs/promises';
-import { getAdvertisementKey, hashFirmware } from '../src/crypt';
+import { getAdvertisementKey, hashLE } from '../src/crypt';
 
 const firmwarePath = './test/EA140CF93E0D/firmware.bin';
 // const privateKeyPath = '../private.pem';
@@ -25,7 +25,7 @@ describe('Node vs Python', () => {
 
   test.skip('hash', async () => {
     const firmware = await readFile(firmwarePath);
-    const firmwareHash = hashFirmware(firmware).toString('hex');
+    const firmwareHash = hashLE(firmware).toString('hex');
     // from test.py or nrfutil pkg display
     const hashMatch =
       '4d67ba795ad5e543f1495443c966eb624a7531a890903df4da0c779ccf5afd3c';

@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer';
 import { dfu } from './protobuf/dfu';
-import { signData } from './crypt';
+import { signDataLE } from './crypt';
 
 type InitCommandParameters = NonNullable<
   Parameters<typeof dfu.InitCommand.create>[0]
@@ -26,7 +26,7 @@ export default function makeInitPacket({
   fwVersion = 1, // firmware version
   hwVersion = 52, // required hardware version
   sdReq = [0x0103], // Allowed versions of the SoftDevice
-  isDebug, // whether the firmware is a debug build
+  isDebug = false, // whether the firmware is a debug build
   verify = false,
 }: MakeInitPacket) {
   const initCommandProperties: InitCommandParameters = {
@@ -35,6 +35,8 @@ export default function makeInitPacket({
     hwVersion,
     sdReq,
     appSize,
+    blSize: 0,
+    sdSize: 0,
     isDebug,
     hash: {
       hashType: dfu.HashType.SHA256,
@@ -60,7 +62,9 @@ export default function makeInitPacket({
 
   // Sign
   const encodedCommandMessage = dfu.Command.encode(commandMessage).finish();
-  const signature = signData(encodedCommandMessage, privateKey);
+  // strip the first 4 bytes (the presumed length)
+  const commandMessageSigned = encodedCommandMessage.subarray(4);
+  const signature = signDataLE(commandMessageSigned, privateKey);
 
   // Create the signed command message
   const signCommandProperties: Parameters<typeof dfu.SignedCommand.create>[0] =
@@ -80,5 +84,6 @@ export default function makeInitPacket({
   const packetMessage = dfu.Packet.create(packetProperties);
 
   // Encode the packet message to a buffer
+  if (verify) handleVerify(dfu.Packet.verify(packetMessage));
   return dfu.Packet.encode(packetMessage).finish();
 }

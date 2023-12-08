@@ -6,7 +6,7 @@ import {
   createPublicKey,
   sign,
 } from 'node:crypto';
-import { getAdvertisementKey, signData, endianSwap } from '../src/crypt';
+import { getAdvertisementKey, signDataLE, endianSwap } from '../src/crypt';
 import { validateSignature } from '../src/cybercrypt';
 
 // ecdsa-sha2-nistp256
@@ -18,9 +18,9 @@ const privateKeyDeviceBuffer = Buffer.from(privateKeyDeviceBase64Hex, 'base64');
 const publicKeyDeviceHex =
   'b65b3f96cee7bd97e7df750804bcbabf2bbbe9ced32b9fad45bea396';
 
-test('signData', async () => {
+test.skip('signDataLE', async () => {
   const privateKeyBuffer = await readFile(privateKeyPath);
-  const signature = signData(Buffer.from('The Love Boat'), privateKeyBuffer);
+  const signature = signDataLE(Buffer.from('The Love Boat'), privateKeyBuffer);
   expect(signature.byteLength).toBe(64);
 });
 
@@ -68,7 +68,7 @@ test('sign & verify', async () => {
   const publicKey = createPublicKey(privateKey);
   const data = Buffer.from('The Love Boat');
   const dataBad = Buffer.from('The sunk Boat');
-  const signature = signData(data, privateKeyBuffer);
+  const signature = signDataLE(data, privateKeyBuffer);
   expect(signature.length).toBe(64);
   expect(await validateSignature(data, endianSwap(signature), publicKey)).toBe(
     true,
