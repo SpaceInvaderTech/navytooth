@@ -1,7 +1,7 @@
 import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
-import { dfu } from '../src/protobuf/dfu';
-import { endianSwap } from '../src/crypt';
+import { dfu } from '../../src/protobuf/dfu';
+import { endianSwap } from '../../src/crypt';
 import { validateSignature } from './cybercrypt';
 
 export function packetValidate(initPacket: Uint8Array, privateKey: KeyObject) {

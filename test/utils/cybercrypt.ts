@@ -14,25 +14,22 @@ const pemRegex = /----\n([\s\S]+)\n----/;
 
 // Convert KeyObject to CryptoKey
 function keyObjectToCryptoKey(publicKey: KeyObject) {
+  if (publicKey.type !== 'public') {
+    throw new Error('KeyObject must be a public key');
+  }
   const pemKey = publicKey.export({
     type: 'spki',
     format: 'pem',
-  }) as string;
-  const pemKeyMatch = pemKey.match(pemRegex);
+  });
+  const pemKeyMatch = pemKey.toString().match(pemRegex);
   if (!pemKeyMatch || pemKeyMatch.length < 2) {
     throw new Error('Invalid PEM key');
   }
   const binaryString = Buffer.from(pemKeyMatch[1], 'base64').toString('binary');
-  const bytes = new Uint8Array(
-    Array.from(binaryString, (char) => char.charCodeAt(0)),
+  const keyData = Buffer.from(
+    new Uint8Array(Array.from(binaryString, (char) => char.charCodeAt(0))),
   );
-  return subtle.importKey(
-    'spki',
-    bytes.buffer,
-    algorithmImport,
-    false,
-    keyUsages,
-  );
+  return subtle.importKey('spki', keyData, algorithmImport, false, keyUsages);
 }
 
 export async function validateSignature(
@@ -40,9 +37,6 @@ export async function validateSignature(
   signature: Uint8Array,
   publicKey: KeyObject,
 ) {
-  if (publicKey.type !== 'public') {
-    throw new Error('KeyObject must be a public key');
-  }
   const cryptoKey = await keyObjectToCryptoKey(publicKey);
   return subtle.verify(algorithmVerify, cryptoKey, signature, data);
 }
