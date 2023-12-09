@@ -1,13 +1,12 @@
 /// <reference types="node" />
-/// <reference types="node" />
 import type { Buffer } from 'node:buffer';
-import type { KeyObject } from 'node:crypto';
-type PacketProps = {
+import { type MakeInitPacketProps } from './initpacket';
+type InitPacketProps = Omit<MakeInitPacketProps, 'firmwareHash' | 'appSize'>;
+export type MakePacketProps = InitPacketProps & {
     firmware: Buffer;
-    privateKey: KeyObject;
     pattern?: string;
 };
-export default function makePacket({ firmware, privateKey, pattern, }: PacketProps): {
+export default function makePacket({ firmware, pattern, privateKey, fwVersion, hwVersion, sdReq, verify, isDebug, }: MakePacketProps): {
     manifest: {
         manifest: {
             application: {
