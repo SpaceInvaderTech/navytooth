@@ -1,15 +1,15 @@
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createPrivateKey } from 'node:crypto';
+import { fetchFirmware } from './firmware';
 import makePacket from '../src/main';
 import createZipBuffer from './zip';
 
-const firmwarePath = './test/nrf52810_xxaa.bin';
 // nrfutil keys generate
 const privateKeyPath = '../private.pem';
 
 test('makePacket & zip', async () => {
-  const firmware = await readFile(firmwarePath);
+  const firmware = await fetchFirmware();
   const privateKeyBuffer = await readFile(privateKeyPath);
   const privateKey = createPrivateKey(privateKeyBuffer);
   const { manifest, initPacket, firmwarePatched } = makePacket({
