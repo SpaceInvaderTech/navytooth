@@ -3,8 +3,8 @@ import { Buffer } from 'node:buffer';
 // https://github.com/seemoo-lab/openhaystack/blob/main/OpenHaystack/OpenHaystack/HaystackApp/MicrobitController.swift#L46-L75
 export function patchFirmware(
   firmware: Buffer,
-  pattern: string,
   publicKey: Buffer,
+  pattern = 'OFFLINEFINDINGPUBLICKEYHERE!',
 ) {
   // Convert the pattern string to a Buffer for searching
   const patternBuffer = Buffer.from(pattern, 'binary');

@@ -1,18 +1,26 @@
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
+import { resolve as pathResolve } from 'node:path';
 import { createPrivateKey } from 'node:crypto';
 import { fetchFirmware } from './utils/firmware';
-import makePacket from '../src/main';
+import makePacket, { type MakePacketProps } from '../src/main';
 import createZipBuffer from './utils/zip';
 
-// nrfutil keys generate
-const privateKeyPath = '../private.pem';
+const privateKeyPath = '../private.pem'; // nrfutil keys generate
+const zipFilePath = pathResolve(__dirname, 'firmware.zip');
+const packetProps: Partial<MakePacketProps> = {
+  fwVersion: 1,
+  hwVersion: 52,
+  sdReq: [0x0103],
+  // isDebug: true,
+};
 
 test('makePacket & zip', async () => {
   const firmware = await fetchFirmware();
   const privateKeyBuffer = await readFile(privateKeyPath);
   const privateKey = createPrivateKey(privateKeyBuffer);
   const { manifest, initPacket, firmwarePatched } = makePacket({
+    ...packetProps,
     firmware,
     privateKey,
   });
@@ -24,7 +32,6 @@ test('makePacket & zip', async () => {
   ]);
   expect(zipBuffer.length).toBeTruthy();
   // zip
-  const zipFilePath = 'firmware.zip';
   await writeFile(zipFilePath, zipBuffer);
   console.log('Created', zipFilePath);
 });

@@ -7,7 +7,7 @@ type InitCommandParameters = NonNullable<
   Parameters<typeof dfu.InitCommand.create>[0]
 >;
 
-type MakeInitPacket = Pick<
+export type MakeInitPacketProps = Pick<
   InitCommandParameters,
   'appSize' | 'fwVersion' | 'hwVersion' | 'sdReq' | 'isDebug'
 > & {
@@ -24,12 +24,27 @@ export default function makeInitPacket({
   firmwareHash, // hash of the firmware
   appSize, // application size
   privateKey, // private key for signing
-  fwVersion = 1, // firmware version
-  hwVersion = 52, // required hardware version
-  sdReq = [0x0103], // Allowed versions of the SoftDevice
+  fwVersion, // firmware version
+  hwVersion, // required hardware version
+  sdReq, // Allowed versions of the SoftDevice
   isDebug = false, // whether the firmware is a debug build
-  verify = false,
-}: MakeInitPacket) {
+  verify = true,
+}: MakeInitPacketProps) {
+  // Create the hash message
+  const hash = dfu.Hash.create({
+    hashType: dfu.HashType.SHA256,
+    hash: firmwareHash,
+  });
+  if (verify) handleVerify(dfu.Hash.verify(hash));
+
+  // Create the boot validation message
+  const bootValidation = dfu.BootValidation.create({
+    type: dfu.ValidationType.VALIDATE_GENERATED_CRC,
+    bytes: Buffer.alloc(0), // empty byte array
+  });
+  if (verify) handleVerify(dfu.BootValidation.verify(bootValidation));
+
+  // Create the init command message
   const initCommandProperties: InitCommandParameters = {
     type: dfu.FwType.APPLICATION,
     fwVersion,
@@ -37,16 +52,8 @@ export default function makeInitPacket({
     sdReq,
     appSize,
     isDebug,
-    hash: {
-      hashType: dfu.HashType.SHA256,
-      hash: firmwareHash,
-    },
-    bootValidation: [
-      {
-        type: dfu.ValidationType.VALIDATE_GENERATED_CRC,
-        bytes: Buffer.alloc(0), // empty byte array
-      },
-    ],
+    hash,
+    bootValidation: [bootValidation],
   };
   if (verify) handleVerify(dfu.InitCommand.verify(initCommandProperties));
   const initCommandMessage = dfu.InitCommand.create(initCommandProperties);
@@ -62,8 +69,8 @@ export default function makeInitPacket({
   // Sign
   const encodedCommandMessage = dfu.Command.encode(commandMessage).finish();
   // strip the first 4 bytes (the presumed length indicator)
-  const commandMessageSigned = encodedCommandMessage.subarray(4);
-  const signature = signDataLE(commandMessageSigned, privateKey);
+  const commandMessageForSignature = encodedCommandMessage.subarray(4);
+  const signature = signDataLE(commandMessageForSignature, privateKey);
 
   // Create the signed command message
   const signCommandProperties: Parameters<typeof dfu.SignedCommand.create>[0] =

@@ -1,34 +1,44 @@
 import type { Buffer } from 'node:buffer';
-import type { KeyObject } from 'node:crypto';
 import { getAdvertisementKey, hashLE, makePrivateKey } from './crypt';
 import { patchFirmware } from './haystack';
-import makeInitPacket from './initpacket';
+import makeInitPacket, { type MakeInitPacketProps } from './initpacket';
 import manifest from './manifest.json';
 
-type PacketProps = {
+type InitPacketProps = Omit<MakeInitPacketProps, 'firmwareHash' | 'appSize'>;
+
+export type MakePacketProps = InitPacketProps & {
   firmware: Buffer;
-  privateKey: KeyObject;
   pattern?: string;
 };
 
 export default function makePacket({
   firmware,
+  pattern,
   privateKey,
-  pattern = 'OFFLINEFINDINGPUBLICKEYHERE!',
-}: PacketProps) {
+  fwVersion,
+  hwVersion,
+  sdReq,
+  verify,
+  isDebug,
+}: MakePacketProps) {
   const privateKeyForAccessory = makePrivateKey();
   const publicKeyForAccessory = getAdvertisementKey(privateKeyForAccessory);
   const firmwarePatched = patchFirmware(
     firmware,
-    pattern,
     publicKeyForAccessory,
+    pattern,
   );
+  const appSize = firmwarePatched.byteLength;
   const firmwareHash = hashLE(firmwarePatched);
   const initPacket = makeInitPacket({
     firmwareHash,
-    appSize: firmwarePatched.byteLength,
+    appSize,
     privateKey,
-    verify: true,
+    fwVersion,
+    hwVersion,
+    sdReq,
+    verify,
+    isDebug,
   });
   return {
     manifest,
