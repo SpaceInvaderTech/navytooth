@@ -1,6 +1,6 @@
 import type { KeyObject } from 'node:crypto';
 import { createPublicKey } from 'node:crypto';
-import { dfu } from './protobuf/dfu';
+import { dfu } from '../src/protobuf/dfu';
 import { endianSwap } from '../src/crypt';
 import { validateSignature } from './cybercrypt';
 

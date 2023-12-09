@@ -1,9 +1,9 @@
 import { test, expect } from 'bun:test';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createPrivateKey } from 'node:crypto';
-import { fetchFirmware } from './firmware';
+import { fetchFirmware } from '../utils/firmware';
 import makePacket from '../src/main';
-import createZipBuffer from './zip';
+import createZipBuffer from '../utils/zip';
 
 // nrfutil keys generate
 const privateKeyPath = '../private.pem';

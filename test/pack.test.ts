@@ -1,9 +1,9 @@
 import { test, describe, expect } from 'bun:test';
 import { readFile } from 'node:fs/promises';
 import { createPrivateKey } from 'node:crypto';
-import { fetchFirmware } from './firmware';
+import { fetchFirmware } from '../utils/firmware';
 import makePacket from '../src/main';
-import { packetValidate } from '../src/packet-validate';
+import { packetValidate } from '../utils/packet-validate';
 
 const privateKeyPath = '../private.pem';
 
