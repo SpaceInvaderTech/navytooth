@@ -1,10 +1,13 @@
 /// <reference types="node" />
 import type { KeyObject } from 'node:crypto';
-import { dfu } from './protobuf/dfu';
-type InitCommandParameters = NonNullable<Parameters<typeof dfu.InitCommand.create>[0]>;
-export type MakeInitPacketProps = Pick<InitCommandParameters, 'appSize' | 'fwVersion' | 'hwVersion' | 'sdReq' | 'isDebug'> & {
+export type MakeInitPacketProps = {
     privateKey: KeyObject;
-    firmwareHash: NonNullable<InitCommandParameters['hash']>['hash'];
+    firmwareHash: Uint8Array;
+    appSize?: number;
+    fwVersion?: number;
+    hwVersion?: number;
+    sdReq?: number[];
+    isDebug?: boolean;
     verify?: boolean;
 };
 export default function makeInitPacket({ firmwareHash, // hash of the firmware
@@ -15,4 +18,3 @@ hwVersion, // required hardware version
 sdReq, // Allowed versions of the SoftDevice
 isDebug, // whether the firmware is a debug build
 verify, }: MakeInitPacketProps): Uint8Array;
-export {};

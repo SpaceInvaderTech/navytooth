@@ -3,18 +3,20 @@ import { Buffer } from 'node:buffer';
 import { dfu } from './protobuf/dfu';
 import { signDataLE } from './crypt';
 
+export type MakeInitPacketProps = {
+  privateKey: KeyObject;
+  firmwareHash: Uint8Array;
+  appSize?: number;
+  fwVersion?: number;
+  hwVersion?: number;
+  sdReq?: number[];
+  isDebug?: boolean;
+  verify?: boolean;
+};
+
 type InitCommandParameters = NonNullable<
   Parameters<typeof dfu.InitCommand.create>[0]
 >;
-
-export type MakeInitPacketProps = Pick<
-  InitCommandParameters,
-  'appSize' | 'fwVersion' | 'hwVersion' | 'sdReq' | 'isDebug'
-> & {
-  privateKey: KeyObject;
-  firmwareHash: NonNullable<InitCommandParameters['hash']>['hash'];
-  verify?: boolean;
-};
 
 function handleVerify(errMsg: string | null) {
   if (errMsg) throw Error(errMsg);
